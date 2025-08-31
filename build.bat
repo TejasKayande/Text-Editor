@@ -8,7 +8,7 @@ if not exist "bin" (mkdir bin)
 
 pushd bin
 
-set FLAGS=/fsanitize=address /EHsc /MP /Zi /W4
+set FLAGS=/EHsc /MP /Zi /W4
 rem set set FLAGS=/Ox /MP /GL
 
 set SYSTEM_LIBS=User32.lib Gdi32.lib

@@ -26,6 +26,7 @@ internal void MoveGapToCursor(GapBuffer* gb) {
     } else if (gb->cur_pos < gb->gap_start) {
 
         int shift = gb->gap_start - gb->cur_pos;
+        if (shift <= 0 || shift >= GET_GAP_SIZE(gb)) return;
 
         void* src  = (void*)&(gb->data.chars[gb->cur_pos]);
         void* dest = (void*)&(gb->data.chars[gb->gap_end - shift + 1]);
@@ -40,6 +41,7 @@ internal void MoveGapToCursor(GapBuffer* gb) {
     } else {
 
         int shift = gb->cur_pos - gb->gap_end;
+        if (shift <= 0 || shift >= GET_GAP_SIZE(gb)) return;
 
         void* src  = (void*)&(gb->data.chars[gb->gap_end + 1]);
         void* dest = (void*)&(gb->data.chars[gb->gap_start]);
