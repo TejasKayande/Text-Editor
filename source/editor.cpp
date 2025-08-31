@@ -39,7 +39,8 @@ internal void MoveGapToCursor(GapBuffer* gb) {
 
     } else {
 
-        int shift = gb->cur_pos - gb->gap_end;
+    // -1 fixes off-by-one
+    int shift = gb->cur_pos - gb->gap_end - 1;
 
         void* src  = (void*)&(gb->data.chars[gb->gap_end + 1]);
         void* dest = (void*)&(gb->data.chars[gb->gap_start]);
@@ -186,14 +187,20 @@ int ed_GetCursorCol(GapBuffer *gb) {
    Line l = gb->lines.items[row];
    int index = l.start, col = 0;
 
-   while (index <= l.end) {
+   while (index < l.end) {
 
-        if (index > gb->gap_start && index <= gb->gap_end) {
+        // skip the internal gap buffer by jumping to the first real char
+        if (index >= gb->gap_start && index <= gb->gap_end) {
+            // if cursor sits at gap_start, that maps to the current column
+            if (gb->cur_pos == gb->gap_start) {
+                return col;
+            }
             index = gb->gap_end + 1;
             continue;
         }
 
-        if (index == gb->cur_pos || index >= l.end)
+        // found the cursor at this index -> return column
+        if (index == gb->cur_pos)
             return col;
 
         // NOTE(Tejas): just in case...
@@ -208,17 +215,20 @@ int ed_GetCursorCol(GapBuffer *gb) {
 }
 
 void ed_MoveCursorRight(GapBuffer *gb) {
-    
+    // NOTE(karan):fixed the cursor clamp on one place when it enters the gap
+    bool started_at_gap_start = (gb->cur_pos == gb->gap_start);
+
     gb->cur_pos++;
 
-    if (gb->cur_pos > gb->gap_start && gb->cur_pos <= gb->gap_end) {
+    if (gb->cur_pos >= gb->gap_start && gb->cur_pos <= gb->gap_end) {
         gb->cur_pos = gb->gap_end + 1;
+        if (started_at_gap_start && gb->cur_pos < gb->data.capacity) {
+            gb->cur_pos++;
+        }
     }
 
-    if (gb->cur_pos >= gb->data.capacity) gb->cur_pos = gb->data.capacity - 1;
-
-    if (gb->cur_pos > gb->gap_start && gb->cur_pos <= gb->gap_end) {
-        gb->cur_pos = gb->gap_start;
+    if (gb->cur_pos > gb->data.capacity) {
+        gb->cur_pos = gb->data.capacity;
     }
 }
 
@@ -226,8 +236,8 @@ void ed_MoveCursorLeft(GapBuffer *gb) {
     
     gb->cur_pos--;
 
-    if (gb->cur_pos > gb->gap_start && gb->cur_pos <= gb->gap_end) {
-        gb->cur_pos = (gb->gap_start > 0) ? gb->gap_start : 0;
+    if (gb->cur_pos >= gb->gap_start && gb->cur_pos <= gb->gap_end) {
+        gb->cur_pos = (gb->gap_start > 0) ? (gb->gap_start - 1) : 0;
     }
 
     if (gb->cur_pos < 0) gb->cur_pos = 0;
