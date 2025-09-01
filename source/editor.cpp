@@ -156,7 +156,6 @@ void ed_InsertCharAtCursor(GapBuffer *gb, char ch) {
         if (gb->gap_start > 0) {
             gb->gap_start--;
             gb->cur_pos = gb->gap_start;
-            LOG("[INSERT LOG] Backspace: gap_start=%d, gap_end=%d, cur_pos=%d\n", gb->gap_start, gb->gap_end, gb->cur_pos);
         }
         return;
     }
@@ -165,8 +164,6 @@ void ed_InsertCharAtCursor(GapBuffer *gb, char ch) {
 
     gb->data.chars[gb->gap_start++] = ch;
     gb->cur_pos = gb->gap_start;
-
-    LOG("[INSERT LOG] Inserted char '%c': gap_start=%d, gap_end=%d, cur_pos=%d\n", ch, gb->gap_start, gb->gap_end, gb->cur_pos);
 
     ed_RecalculateLines(gb);
 }
@@ -290,4 +287,42 @@ void ed_MoveCursorDown(GapBuffer *gb) {
     }
 
     gb->cur_pos = index;
+}
+
+void ed_LogGapBuffer(GapBuffer *gb) {
+
+    LOG("----------GapBuffer----------\n");
+    LOG("Buffer Capacity: %d\n", gb->data.capacity);
+    LOG("Gap Size: %d\n", GET_GAP_SIZE(gb));
+    LOG("Valid Chars: %d\n", GET_TEXT_LENGTH(gb));
+    LOG("\n");
+    LOG("Gap Start: %d\n", gb->gap_start);
+    LOG("Gap End: %d\n", gb->gap_end);
+    LOG("Cursor Pos: %d\n", gb->cur_pos);
+    LOG("\n");
+    LOG("Total Lines: %d\n", gb->lines.count);
+    LOG("Cursor Row: %d\n", ed_GetCursorRow(gb));
+    LOG("Cursor Col: %d\n", ed_GetCursorCol(gb));
+    char ch = gb->data.chars[gb->cur_pos];
+    if (ch == '\n') LOG("Char At Cursor: \\n\n");
+    else LOG("Char At Cursor: %c\n", ch);
+    LOG("-----------------------------\n");
+}
+
+void ed_LogValidChars(GapBuffer *gb) {
+
+    LOG("----------------Buffer Content----------------\n");
+    for (int index = 0; index < gb->data.capacity; index++) {
+
+        if (index >= gb->gap_start && index <= gb->gap_end) {
+            index = gb->gap_end;
+            continue;
+        }
+
+        char ch = gb->data.chars[index];
+
+        if (ch == '\n') printf("\\n\n");
+        else printf("%c", ch);
+    }
+    LOG("----------------------------------------------\n");
 }

@@ -60,4 +60,8 @@ void ed_MoveCursorLeft(GapBuffer *gb);
 void ed_MoveCursorUp(GapBuffer *gb);
 void ed_MoveCursorDown(GapBuffer *gb);
 
+// NOTE(Tejas): For Debugging purposes
+void ed_LogGapBuffer(GapBuffer *gb);
+void ed_LogValidChars(GapBuffer *gb);
+
 #endif // EDITOR_H
