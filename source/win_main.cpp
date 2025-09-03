@@ -47,10 +47,8 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
         for (int index = line.start; index < line.end; index++) {
 
-            if (index >= gb->gap_start && index <= gb->gap_end) {
-                index = gb->gap_end; // after continue this will go to gap_end + 1;
+            if (index >= gb->gap_start && index <= gb->gap_end)
                 continue;
-            }
 
             temp[len++] = gb->data.chars[index];
         }
