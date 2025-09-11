@@ -76,12 +76,10 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         G_editor_opt.background = CreateSolidBrush(RGB(18, 18, 18));
         G_editor_opt.font_color = RGB(208, 208, 208);
         G_editor_opt.font = CreateFont(-24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-                                   ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-                                   DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Consolas");
+                                       ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                       DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Consolas");
 
         G_editor_opt.cursor_color = CreatePen(PS_SOLID, 1, RGB(255, 255, 0));
-
-        ed_Init(&G_editor, "test.txt");
 
     } break;
 
@@ -231,6 +229,13 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
                                 NULL, NULL, hInstance, NULL);
 
     ShowWindow(hwnd, SW_SHOWNORMAL);
+
+    const char* file_name = "test.txt";
+    if (__argc == 2) {
+        file_name = __argv[1];
+        LOG("%s", file_name);
+    }
+    ed_Init(&G_editor, file_name);
 
     MSG msg = { };
     while (GetMessage(&msg, NULL, 0, 0)) {
