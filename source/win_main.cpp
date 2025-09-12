@@ -19,6 +19,7 @@ struct EditorOptions {
     COLORREF font_color;
     HBRUSH   background;
     HPEN     cursor_color;
+    int      start_line_number;
 };
 /*************************************/
 
@@ -38,7 +39,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
     int x = 0;
     int y = 0;
 
-    for (int i = 0; i < gb->lines.count; i++) {
+    for (int i = G_editor_opt.start_line_number; i < gb->lines.count; i++) {
 
         Line line = gb->lines.items[i];
 
@@ -60,7 +61,9 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
 internal void RenderCursor(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
-    int y = ed_GetCursorRow(gb) * font_h;
+    int row = ed_GetCursorRow(gb) - G_editor_opt.start_line_number;
+
+    int y =  row * font_h;
     int x = ed_GetCursorCol(gb) * font_w;
     Rectangle(hdc, x, y, x + 3, y + font_h);
 }
@@ -80,6 +83,8 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                                        DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Consolas");
 
         G_editor_opt.cursor_color = CreatePen(PS_SOLID, 1, RGB(255, 255, 0));
+
+        G_editor_opt.start_line_number = 0;
 
     } break;
 
@@ -118,33 +123,59 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             }
         } break;
 
-        case 'F': {
+        case 'Q': {
             if (ctrl_down) {
                 ed_LogValidChars(&(G_editor->gb));
             }
         } break;
 
+        case 'F': {
+            if (ctrl_down) {
+                ed_MoveCursorRight(&(G_editor->gb));
+            }
+        } break;
+
+        case 'B': {
+            if (ctrl_down) {
+                ed_MoveCursorLeft(&(G_editor->gb));
+            }
+        } break;
+
+        case 'P': {
+            if (ctrl_down) {
+                ed_MoveCursorUp(&(G_editor->gb));
+            }
+        } break;
+
+        case 'N': {
+            if (ctrl_down) {
+                ed_MoveCursorDown(&(G_editor->gb));
+            }
+        } break;
+
         case VK_RIGHT: {
             ed_MoveCursorRight(&(G_editor->gb));
-            InvalidateRect(hwnd, NULL, TRUE);
         } break;
 
         case VK_LEFT: {
             ed_MoveCursorLeft(&(G_editor->gb));
-            InvalidateRect(hwnd, NULL, TRUE);
         } break;
 
         case VK_UP: {
-            ed_MoveCursorUp(&(G_editor->gb));
-            InvalidateRect(hwnd, NULL, TRUE);
+            G_editor_opt.start_line_number++;
+            if (G_editor_opt.start_line_number >= G_editor->gb.lines.count)
+                G_editor_opt.start_line_number = G_editor->gb.lines.count - 1;
         } break;
 
         case VK_DOWN: {
-            ed_MoveCursorDown(&(G_editor->gb));
-            InvalidateRect(hwnd, NULL, TRUE);
+            G_editor_opt.start_line_number--;
+            if (G_editor_opt.start_line_number < 0)
+                G_editor_opt.start_line_number = 0;
         } break;
 
         }
+
+        InvalidateRect(hwnd, NULL, TRUE);
 
     } break;
 
