@@ -11,7 +11,7 @@
 
 void* AllocateMem(int size) {
     
-    void* ptr = GlobalAlloc(GMEM_FIXED, size);
+    void* ptr = malloc(size);
 
     // TODO(Tejas): add a logging system.
     if (!ptr) return NULL; 
@@ -20,7 +20,7 @@ void* AllocateMem(int size) {
 
 void* ReallocateMem(void* ptr, int new_size) {
     
-    void* new_ptr = (Line*)GlobalReAlloc(ptr, new_size, GMEM_FIXED);
+    void* new_ptr = realloc(ptr, new_size);
 
     // TODO(Tejas): add a logging system.
     if (!new_ptr) return NULL;
@@ -29,7 +29,7 @@ void* ReallocateMem(void* ptr, int new_size) {
 
 void FreeMem(void* ptr) {
 
-    if (ptr) GlobalFree(ptr);
+    if (ptr) free(ptr);
 }
 
 char* LoadFileIntoGapBuffer(const char* file_path, int *file_size, int *buffer_size, int gap_size) {
@@ -40,7 +40,7 @@ char* LoadFileIntoGapBuffer(const char* file_path, int *file_size, int *buffer_s
 
     DWORD f_size     = GetFileSize(file_handle, NULL);
     DWORD total_size = f_size + gap_size;
-    char* raw        = (char*)GlobalAlloc(GMEM_FIXED, total_size);
+    char* raw        = (char*)AllocateMem(total_size);
     memset(raw, 0, total_size);
 
     DWORD chars_read = 0;
@@ -49,7 +49,7 @@ char* LoadFileIntoGapBuffer(const char* file_path, int *file_size, int *buffer_s
     CloseHandle(file_handle);
 
     // normalizing new lines form /r/n to /n
-    char* normalized = (char*) GlobalAlloc(GMEM_FIXED, total_size);
+    char* normalized = (char*)AllocateMem(total_size);
     int chars_written = 0;
     for (DWORD i = 0; i < chars_read; i++) {
 
@@ -68,7 +68,7 @@ char* LoadFileIntoGapBuffer(const char* file_path, int *file_size, int *buffer_s
     if (file_size) *file_size = chars_written;
     if (buffer_size) *buffer_size = *file_size + gap_size;
 
-    GlobalFree(raw);
+    FreeMem(raw);
     return normalized;
 }
 
