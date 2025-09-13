@@ -10,8 +10,29 @@
 
 internal void AdjustLinesBufferCapacity(Lines *lines) {
 
-    lines->capacity = lines->capacity * 2;
+    lines->capacity += INITIAL_GAP_SIZE;
     lines->items = (Line*)ReallocateMem(lines->items, lines->capacity * sizeof(Line));
+}
+
+internal void ReallocateGapBuffer(GapBuffer* gb) {
+
+    int old_cap = gb->data.capacity;
+
+    gb->data.capacity += INITIAL_GAP_SIZE;
+    gb->data.chars = (char*)ReallocateMem(gb->data.chars, gb->data.capacity * sizeof(char));
+    if (gb->data.chars == NULL){
+        LOG("NULL\n");
+    }
+
+    int shift = old_cap - gb->gap_end;
+
+    for (int i = 0; i < shift; i++) {
+        int src  = gb->gap_start + i;
+        int dest = old_cap + i;
+        gb->data.chars[dest] = gb->data.chars[src];
+    }
+
+    gb->gap_end = gb->gap_start + INITIAL_GAP_SIZE - 1;
 }
 
 internal void MoveGapToCursor(GapBuffer* gb) {
@@ -30,6 +51,9 @@ internal void MoveGapToCursor(GapBuffer* gb) {
     } else if (gb->cur_pos < gb->gap_start) {
 
         int shift = gb->gap_start - gb->cur_pos;
+        if (shift > GET_GAP_SIZE(gb)) {
+            
+        }
 
         for (int i = 0; i < shift; i++) {
             int src  = gb->cur_pos + i;
@@ -45,6 +69,9 @@ internal void MoveGapToCursor(GapBuffer* gb) {
     } else {
 
         int shift = (gb->cur_pos - gb->gap_end) - 1; // dont want to include cursor
+        if (shift > GET_GAP_SIZE(gb)) {
+            
+        }
 
         for (int i = 0; i < shift; i++) {
             int src  = gb->gap_end + 1 + i;
@@ -89,7 +116,7 @@ void ed_Init(Editor **ed, const char* file_name) {
     GapBuffer *gb = &((*ed)->gb);
 
     int fs, bs;
-    int gap_size = 1024;
+    int gap_size = INITIAL_GAP_SIZE;
     gb->data.chars    = LoadFileIntoGapBuffer(file_name, &fs, &bs, gap_size);
     gb->data.capacity = bs;
 
@@ -112,7 +139,7 @@ void ed_Init(Editor **ed, const char* file_name) {
 
     (*ed)->file_name = file_name;
 
-    gb->lines.capacity = 1024;
+    gb->lines.capacity = INITIAL_MAX_LINES;
     gb->lines.items    = (Line*)AllocateMem(sizeof(Line) * gb->lines.capacity);
     gb->lines.count    = 0;
 
@@ -175,13 +202,10 @@ void ed_RecalculateLines(GapBuffer *gb) {
 
 void ed_InsertCharAtCursor(GapBuffer *gb, char ch) {
 
-    // find out at what index in the buffer is the cursor in
-    // and check if its equal to gap_start. If not then move
-    // gap buffer to that index.
     MoveGapToCursor(gb);
 
-    // TODO(Tejas): Add dynamic gap expansion
-    if (gb->gap_start >= gb->gap_end) return;
+    if (gb->gap_start > gb->gap_end)
+        ReallocateGapBuffer(gb);
 
     if (ch == '\b') {
         if (gb->gap_start > 0) {

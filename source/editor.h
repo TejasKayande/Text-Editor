@@ -14,6 +14,9 @@
 #define GET_GAP_SIZE(gb)    (((gb)->gap_end) - ((gb)->gap_start) + 1)
 #define GET_TEXT_LENGTH(gb) ((gb)->data.capacity - GET_GAP_SIZE(gb))
 
+#define INITIAL_GAP_SIZE  10
+#define INITIAL_MAX_LINES 10
+
 struct Line {
     int start;
     int end;
