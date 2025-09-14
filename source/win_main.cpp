@@ -19,7 +19,9 @@ struct EditorOptions {
     COLORREF font_color;
     HBRUSH   background;
     HPEN     cursor_color;
-    int      start_line_number;
+
+    // TODO(Tejas): Abstract This in a different thing
+    int start_line_number;
 };
 /*************************************/
 
@@ -43,7 +45,8 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
         Line line = gb->lines.items[i];
 
-        char temp[4096];
+        // FIXME(Tejas): breaks if number of chars in a line is bigger than 4096.
+        char temp[KB(4)];
         int len = 0;
 
         for (int index = line.start; index < line.end; index++) {

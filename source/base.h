@@ -49,6 +49,10 @@
 #  define CL_COMPILER 0
 #endif
 
+#define KB(x)   ((unsigned long long)(x) * 1024ULL)
+#define MB(x)   (KB(x) * 1024ULL)
+#define GB(x)   (MB(x) * 1024ULL)
+
 #define ARRAY_COUNT(x) (sizeof(x) / sizeof(*(x)))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
