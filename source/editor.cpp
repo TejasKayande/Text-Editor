@@ -38,6 +38,9 @@ internal void ReallocateGapBufferForShift(GapBuffer* gb, int shift) {
     // FIXME(Tejas): This function has worked the first time I ran it,
     //               there must be something wrong here! TEST!
 
+    // TODO(Tejas): We actually dont need to Reallocate the gap buffer
+    //              to shift the gap! REMOVE THIS FUNCTION!!!
+
     int old_cap = gb->data.capacity;
 
     int extended_size = KB(1) + shift;
