@@ -1,6 +1,6 @@
 /*===============================================================================
   @File:   editor.cpp
-  @Brief:  
+  @Brief: 
   @Author: Tejas
   @Date:   30-08-2025
   @Notice: Released under the MIT License. See LICENSE file for details.
@@ -18,13 +18,11 @@ internal void ReallocateGapBuffer(GapBuffer* gb) {
 
     int old_cap = gb->data.capacity;
 
-    gb->data.capacity += INITIAL_GAP_SIZE;
+    // gb->data.capacity += INITIAL_GAP_SIZE;
+    gb->data.capacity += KB(1);
     gb->data.chars = (char*)ReallocateMem(gb->data.chars, gb->data.capacity * sizeof(char));
-    if (gb->data.chars == NULL){
-        LOG("NULL\n");
-    }
 
-    int shift = old_cap - gb->gap_end;
+    int shift = old_cap - gb->gap_end - 1;
 
     for (int i = 0; i < shift; i++) {
         int src  = gb->gap_start + i;
@@ -32,7 +30,33 @@ internal void ReallocateGapBuffer(GapBuffer* gb) {
         gb->data.chars[dest] = gb->data.chars[src];
     }
 
-    gb->gap_end = gb->gap_start + INITIAL_GAP_SIZE - 1;
+    gb->gap_end = gb->gap_start + KB(1) - 1;
+}
+
+internal void ReallocateGapBufferForShift(GapBuffer* gb, int shift) {
+
+    // FIXME(Tejas): This function has worked the first time I ran it,
+    //               there must be something wrong here! TEST!
+
+    int old_cap = gb->data.capacity;
+
+    int extended_size = KB(1) + shift;
+    gb->data.capacity += extended_size;
+    gb->data.chars = (char*)ReallocateMem(gb->data.chars, gb->data.capacity * sizeof(char));
+    int old_gap_end = gb->gap_end;
+    gb->gap_end = gb->gap_end + extended_size;
+
+    int shift_ = (gb->gap_end - old_gap_end) + (old_cap - gb->gap_end) - 1;
+    for (int i = 0; i < shift_; i++) {
+        int src  = old_gap_end + i + 1;
+        int dest = gb->gap_end + i + 1;
+        gb->data.chars[dest] = gb->data.chars[src];
+    }
+
+    if (gb->cur_pos > old_gap_end) {
+        int diff = gb->cur_pos - old_gap_end;
+        gb->cur_pos = gb->gap_end + diff;
+    }
 }
 
 internal void MoveGapToCursor(GapBuffer* gb) {
@@ -51,8 +75,8 @@ internal void MoveGapToCursor(GapBuffer* gb) {
     } else if (gb->cur_pos < gb->gap_start) {
 
         int shift = gb->gap_start - gb->cur_pos;
-        if (shift > GET_GAP_SIZE(gb)) {
-            
+        if (shift >= GET_GAP_SIZE(gb)) {
+            ReallocateGapBufferForShift(gb, shift);
         }
 
         for (int i = 0; i < shift; i++) {
@@ -69,8 +93,8 @@ internal void MoveGapToCursor(GapBuffer* gb) {
     } else {
 
         int shift = (gb->cur_pos - gb->gap_end) - 1; // dont want to include cursor
-        if (shift > GET_GAP_SIZE(gb)) {
-            
+        if (shift >= GET_GAP_SIZE(gb)) {
+            ReallocateGapBufferForShift(gb, shift);
         }
 
         for (int i = 0; i < shift; i++) {
@@ -258,7 +282,6 @@ int ed_GetCursorCol(GapBuffer *gb) {
 }
 
 void ed_MoveCursorRight(GapBuffer *gb) {
-
 
     int before = gb->cur_pos;
 
