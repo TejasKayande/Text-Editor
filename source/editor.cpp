@@ -17,7 +17,7 @@ internal void AdjustLinesBufferCapacity(Lines *lines) {
 internal void ReallocateGapBuffer(GapBuffer* gb) {
 
     int old_cap = gb->data.capacity;
-
+    
     // gb->data.capacity += INITIAL_GAP_SIZE;
     gb->data.capacity += KB(1);
     gb->data.chars = (char*)ReallocateMem(gb->data.chars, gb->data.capacity * sizeof(char));
@@ -31,7 +31,7 @@ internal void ReallocateGapBuffer(GapBuffer* gb) {
     }
 
     gb->gap_end = gb->gap_start + KB(1) - 1;
-}
+} 
 
 internal void ReallocateGapBufferForShift(GapBuffer* gb, int shift) {
 

@@ -11,6 +11,7 @@
 
 #include "base.h"
 #include "editor.h"
+#include "editor_view.h"
 
 /******* Structure Definations *******/
 // TODO(Tejas): Make this platform independent
@@ -20,8 +21,7 @@ struct EditorOptions {
     HBRUSH   background;
     HPEN     cursor_color;
 
-    // TODO(Tejas): Abstract This in a different thing
-    int start_line_number;
+    EditorView ev;
 };
 /*************************************/
 
@@ -41,7 +41,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
     int x = 0;
     int y = 0;
 
-    for (int i = G_editor_opt.start_line_number; i < gb->lines.count; i++) {
+    for (int i = G_editor_opt.ev.start_line; i <= G_editor_opt.ev.end_line; i++) {
 
         Line line = gb->lines.items[i];
 
@@ -64,7 +64,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
 internal void RenderCursor(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
-    int row = ed_GetCursorRow(gb) - G_editor_opt.start_line_number;
+    int row = ed_GetCursorRow(gb) - G_editor_opt.ev.start_line;
 
     int y =  row * font_h;
     int x = ed_GetCursorCol(gb) * font_w;
@@ -87,7 +87,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         G_editor_opt.cursor_color = CreatePen(PS_SOLID, 1, RGB(255, 255, 0));
 
-        G_editor_opt.start_line_number = 0;
+        G_editor_opt.ev.start_line = 0;
 
     } break;
 
@@ -165,15 +165,15 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         } break;
 
         case VK_UP: {
-            G_editor_opt.start_line_number++;
-            if (G_editor_opt.start_line_number >= G_editor->gb.lines.count)
-                G_editor_opt.start_line_number = G_editor->gb.lines.count - 1;
+            G_editor_opt.ev.start_line++;
+            if (G_editor_opt.ev.start_line >= G_editor->gb.lines.count)
+                G_editor_opt.ev.start_line = G_editor->gb.lines.count - 1;
         } break;
 
         case VK_DOWN: {
-            G_editor_opt.start_line_number--;
-            if (G_editor_opt.start_line_number < 0)
-                G_editor_opt.start_line_number = 0;
+            G_editor_opt.ev.start_line--;
+            if (G_editor_opt.ev.start_line < 0)
+                G_editor_opt.ev.start_line = 0;
         } break;
 
         }
@@ -200,15 +200,26 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         int font_w = tm.tmAveCharWidth;
         int font_h = tm.tmHeight;
 
-        RenderGapBuffer(hdc, &(G_editor->gb), font_w, font_h);
+        // recalculate the endline
+        {
+            int height = rect.bottom - rect.top;
 
-        SelectObject(hdc, old_font);
+            int lines = (height / font_h) + 1;
+            LOG("%d", lines);
+            G_editor_opt.ev.end_line = G_editor_opt.ev.start_line + lines;
+
+            if (G_editor_opt.ev.end_line >= G_editor->gb.lines.count)
+                G_editor_opt.ev.end_line = G_editor->gb.lines.count - 1;
+        }
+
+        RenderGapBuffer(hdc, &(G_editor->gb), font_w, font_h);
 
         // Cursor Rendering
         HPEN old_pen = (HPEN)SelectObject(hdc, G_editor_opt.cursor_color);
 
         RenderCursor(hdc, &(G_editor->gb), font_w, font_h);
 
+        SelectObject(hdc, old_font);
         SelectObject(hdc, old_pen);
 
         EndPaint(hwnd, &ps);
