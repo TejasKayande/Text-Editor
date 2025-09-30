@@ -10,6 +10,7 @@
 #define EDITOR_VIEW_H
 
 #include "base.h"
+#include "editor.h"
 
 // NOTE(Tejas): All the visual stuff goes in here
 
@@ -20,5 +21,11 @@ struct EditorView {
     int start_line;
     int end_line;
 };
+
+// TODO(Tejas): Does the column wrap also go in here??
+void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_height);
+
+void ev_MoveViewOneLineDown(EditorView *ev, GapBuffer *gb);
+void ev_MoveViewOneLineUp(EditorView *ev, GapBuffer *gb);
 
 #endif // EDITOR_VIEW_H

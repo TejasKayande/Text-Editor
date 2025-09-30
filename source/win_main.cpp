@@ -165,15 +165,15 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         } break;
 
         case VK_UP: {
-            G_editor_opt.ev.start_line++;
-            if (G_editor_opt.ev.start_line >= G_editor->gb.lines.count)
-                G_editor_opt.ev.start_line = G_editor->gb.lines.count - 1;
+
+            ev_MoveViewOneLineUp(&(G_editor_opt.ev), &(G_editor->gb));
+
         } break;
 
         case VK_DOWN: {
-            G_editor_opt.ev.start_line--;
-            if (G_editor_opt.ev.start_line < 0)
-                G_editor_opt.ev.start_line = 0;
+
+            ev_MoveViewOneLineDown(&(G_editor_opt.ev), &(G_editor->gb));
+
         } break;
 
         }
@@ -189,6 +189,12 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         RECT rect;
         GetClientRect(hwnd, &rect);
+
+        int width  = rect.right - rect.left;
+        int height = rect.bottom - rect.top;
+
+        (void)width; // NOTE(Tejas): not used yet, just to avoid warning
+
         FillRect(hdc, &rect, G_editor_opt.background);
 
         // Text Rendering
@@ -200,18 +206,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         int font_w = tm.tmAveCharWidth;
         int font_h = tm.tmHeight;
 
-        // recalculate the endline
-        {
-            int height = rect.bottom - rect.top;
-
-            int lines = (height / font_h) + 1;
-            LOG("%d", lines);
-            G_editor_opt.ev.end_line = G_editor_opt.ev.start_line + lines;
-
-            if (G_editor_opt.ev.end_line >= G_editor->gb.lines.count)
-                G_editor_opt.ev.end_line = G_editor->gb.lines.count - 1;
-        }
-
+        ev_UpdateEditorView(&(G_editor_opt.ev), &(G_editor->gb), font_h, height);
         RenderGapBuffer(hdc, &(G_editor->gb), font_w, font_h);
 
         // Cursor Rendering
@@ -278,7 +273,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     const char* file_name = "test.txt";
     if (__argc == 2) {
         file_name = __argv[1];
-        LOG("%s", file_name);
     }
     ed_Init(&G_editor, file_name);
 
