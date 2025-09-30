@@ -4,7 +4,7 @@ project(TextEditor C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCES source/platform.cpp source/editor.cpp)
+set(SOURCES source/platform.cpp source/editor.cpp source/editor_view.cpp)
 
 add_executable(TextEditor ${SOURCES})
 
