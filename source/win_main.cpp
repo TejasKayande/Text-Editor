@@ -146,13 +146,15 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case 'P': {
             if (ctrl_down) {
-                ed_MoveCursorUp(&(G_editor->gb));
+                // ed_MoveCursorUp(&(G_editor->gb));
+                ed_SetCursorRow(&(G_editor->gb), ed_GetCursorRow(&(G_editor->gb)) - 1);
             }
         } break;
 
         case 'N': {
             if (ctrl_down) {
-                ed_MoveCursorDown(&(G_editor->gb));
+                // ed_MoveCursorDown(&(G_editor->gb));
+                ed_SetCursorRow(&(G_editor->gb), ed_GetCursorRow(&(G_editor->gb)) + 1);
             }
         } break;
 
@@ -285,6 +287,5 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 #ifndef NDEBUG
     if (console_attached) FreeConsole();
 #endif
-
     return 0;
 }
