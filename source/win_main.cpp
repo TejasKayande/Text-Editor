@@ -146,15 +146,17 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case 'P': {
             if (ctrl_down) {
-                // ed_MoveCursorUp(&(G_editor->gb));
-                ed_SetCursorRow(&(G_editor->gb), ed_GetCursorRow(&(G_editor->gb)) - 1);
+                if (ed_GetCursorRow(&(G_editor->gb)) == G_editor_opt.ev.start_line)
+                    ev_MoveViewOneLineUp(&(G_editor_opt.ev), &(G_editor->gb));
+                ed_MoveCursorUp(&(G_editor->gb));
             }
         } break;
 
         case 'N': {
             if (ctrl_down) {
-                // ed_MoveCursorDown(&(G_editor->gb));
-                ed_SetCursorRow(&(G_editor->gb), ed_GetCursorRow(&(G_editor->gb)) + 1);
+                if (ed_GetCursorRow(&(G_editor->gb)) == G_editor_opt.ev.end_line)
+                    ev_MoveViewOneLineDown(&(G_editor_opt.ev), &(G_editor->gb));
+                ed_MoveCursorDown(&(G_editor->gb));
             }
         } break;
 
