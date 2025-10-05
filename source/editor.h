@@ -58,6 +58,8 @@ void ed_InsertCharAtCursor(GapBuffer *gb, char ch);
 int ed_GetCursorRow(GapBuffer *gb);
 int ed_GetCursorCol(GapBuffer *gb);
 
+void ed_SetCursorRow(GapBuffer *gb, int row);
+
 void ed_MoveCursorRight(GapBuffer *gb);
 void ed_MoveCursorLeft(GapBuffer *gb);
 void ed_MoveCursorUp(GapBuffer *gb);

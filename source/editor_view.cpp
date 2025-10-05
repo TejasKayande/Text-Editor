@@ -14,7 +14,7 @@ void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_heig
 
     if (ev->end_line >= gb->lines.count) ev->end_line = gb->lines.count - 1;
 
-    // TODO(Tejas): Make it so that the cursor will always be inside the cursor!
+    // TODO(Tejas): Make it so that the cursor will always be inside the View Port!
 }
 
 void ev_MoveViewOneLineDown(EditorView *ev, GapBuffer *gb) {

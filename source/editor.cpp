@@ -132,6 +132,7 @@ internal int GetCursorPosInValidChars(GapBuffer *gb) {
     return pos;
 }
 
+// TODO(Tejas): Remove This!!!
 void FillGapWithChar(GapBuffer *gb, char ch) {
     for (int index = gb->gap_start; index <= gb->gap_end; index++)
         gb->data.chars[index] = ch;
@@ -284,6 +285,43 @@ int ed_GetCursorCol(GapBuffer *gb) {
     return col;
 }
 
+void ed_SetCursorRow(GapBuffer *gb, int row) {
+
+    // TODO(Tejas): maybe instead of returning, this could set the
+    //              cursor row to the max or min it can?!
+    if (row < 0 || row >= gb->lines.count) return;
+
+    int col = ed_GetCursorCol(gb);
+    Line l = gb->lines.items[row];
+
+    int index = l.start;
+
+    if ((col + l.start) > l.end) {
+
+        index = l.end;
+
+    } else {
+
+        while (col > 0) {
+
+            if (index >= gb->gap_start && index <= gb->gap_end) {
+                index = gb->gap_end + 1;
+                continue;   
+            }
+
+            if (index >= gb->data.capacity) {
+                if (gb->gap_end == gb->data.capacity - 1) index = gb->gap_start;
+                break;   
+            }
+
+            col--;
+            index++;
+        }
+    }
+
+    gb->cur_pos = index;
+}
+
 void ed_MoveCursorRight(GapBuffer *gb) {
 
     int before = gb->cur_pos;
@@ -324,7 +362,7 @@ void ed_MoveCursorUp(GapBuffer *gb) {
 
     int index = l.start;
     for (int i = 0; i < col; i++) {
-        if (index > gb->gap_start && index <= gb->gap_end) {
+        if (index >= gb->gap_start && index <= gb->gap_end) {
             index = gb->gap_end + 1;
             i--;
             continue;
@@ -352,7 +390,7 @@ void ed_MoveCursorDown(GapBuffer *gb) {
 
     int index = l.start;
     for (int i = 0; i < col; i++) {
-        if (index > gb->gap_start && index <= gb->gap_end) {
+        if (index >= gb->gap_start && index <= gb->gap_end) {
             index = gb->gap_end + 1;
             i--;
             continue;
