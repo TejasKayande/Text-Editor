@@ -78,7 +78,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     switch (msg) {
 
     case WM_CREATE: {
-        
+
         G_editor_opt.background = CreateSolidBrush(RGB(18, 18, 18));
         G_editor_opt.font_color = RGB(208, 208, 208);
         G_editor_opt.font = CreateFont(-24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
@@ -110,7 +110,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case 'S': {
             if (ctrl_down) {
-                saveGapBufferToFile(
+                SaveGapBufferToFile(
                     G_editor->file_name,
                     G_editor->gb.data.chars,
                     G_editor->gb.data.capacity,

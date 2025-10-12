@@ -72,7 +72,7 @@ char* LoadFileIntoGapBuffer(const char* file_path, int *file_size, int *buffer_s
     return normalized;
 }
 
-void saveGapBufferToFile(const char* file_path, char *buffer, int buffer_count, int gap_start, int gap_end) {
+void SaveGapBufferToFile(const char* file_path, char *buffer, int buffer_count, int gap_start, int gap_end) {
     
     HANDLE file_handle = CreateFileA(file_path, GENERIC_WRITE, 0,
                                      NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,

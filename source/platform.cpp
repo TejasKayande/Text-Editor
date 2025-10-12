@@ -14,5 +14,6 @@
 #include "win_platform.cpp"
 #include "win_main.cpp"
 #else
+
 #error This Platform is currently not supported!
 #endif
