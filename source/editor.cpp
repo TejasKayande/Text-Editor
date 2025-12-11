@@ -171,7 +171,7 @@ void ed_Init(Editor **ed, const char* file_name) {
     gb->lines.items    = (Line*)AllocateMem(sizeof(Line) * gb->lines.capacity);
     gb->lines.count    = 0;
 
-    FillGapWithChar(gb, '-');
+    // FillGapWithChar(gb, '-');
     ed_RecalculateLines(gb);
 }
 
@@ -235,22 +235,35 @@ void ed_InsertCharAtCursor(GapBuffer *gb, char ch) {
     if (gb->gap_start > gb->gap_end)
         ReallocateGapBuffer(gb);
 
-    if (ch == '\b') {
+    switch (ch) {
+
+    case '\b': {
         if (gb->gap_start > 0) {
             gb->gap_start--;
             gb->cur_pos = gb->gap_start;
         }
-    }
+    } break;
 
-    else {
+    case '\t': {
+        ed_InsertCharAtCursor(gb, ' ');
+        ed_InsertCharAtCursor(gb, ' ');
+        ed_InsertCharAtCursor(gb, ' ');
+        ed_InsertCharAtCursor(gb, ' ');
+    } break;
 
+    default: {
         if (ch == '\r') ch = '\n';
+        if ((ch >= ' ') || ch == '\n') {
+            gb->data.chars[gb->gap_start++] = ch;
+            gb->cur_pos = gb->gap_start;
+        } else {
+            printf("%c", ch);
+        }
+    } break;
 
-        gb->data.chars[gb->gap_start++] = ch;
-        gb->cur_pos = gb->gap_start;
     }
 
-    FillGapWithChar(gb, '-');
+    // FillGapWithChar(gb, '-');
     ed_RecalculateLines(gb);
 }
 
