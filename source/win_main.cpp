@@ -171,15 +171,11 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         } break;
 
         case VK_UP: {
-
             ev_MoveViewOneLineUp(&(G_editor_opt.ev), &(G_editor->gb));
-
         } break;
 
         case VK_DOWN: {
-
             ev_MoveViewOneLineDown(&(G_editor_opt.ev), &(G_editor->gb));
-
         } break;
 
         }
