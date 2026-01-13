@@ -41,7 +41,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
     int x = 0;
     int y = 0;
 
-    for (int i = G_editor_opt.ev.start_line; i <= G_editor_opt.ev.end_line; i++) {
+    for (int i = G_editor_opt.ev.start_line; i <= G_editor_opt.ev.end_line && i < gb->lines.count; i++) {
 
         Line line = gb->lines.items[i];
 
@@ -97,6 +97,8 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         if (!ctrl_down) {
             ed_InsertCharAtCursor(&(G_editor->gb), (char)wParam);
+            if (ed_GetCursorRow(&(G_editor->gb)) == G_editor_opt.ev.end_line)
+                ev_MoveViewOneLineDown(&(G_editor_opt.ev), &(G_editor->gb));
             InvalidateRect(hwnd, NULL, TRUE);
         }
 
