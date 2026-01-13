@@ -8,6 +8,7 @@
 
 #define NOMINMAX
 #include <windows.h>
+#include <shellapi.h>
 
 #include "base.h"
 #include "editor.h"
@@ -223,6 +224,22 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
     } break;
 
+    case WM_DROPFILES: {
+
+        HDROP hdrop = (HDROP) wParam;
+
+        // NOTE(Tejas): For now we only allow one file to be dropped into the editor
+        int file_count = DragQueryFile(hdrop, 0xFFFFFFFF, NULL, 0);
+        if (!(file_count > 1)) {
+            char file_name[KB(1)];
+            DragQueryFileA(hdrop, 0, file_name, KB(1));
+            ed_Init(&G_editor, file_name);
+            LOG("Loading %s", file_name);
+            InvalidateRect(hwnd, NULL, TRUE);
+        }
+
+    } break;
+
     case WM_DESTROY: {
         ed_Close(G_editor);
         DeleteObject(G_editor_opt.background);
@@ -271,6 +288,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
                                 NULL, NULL, hInstance, NULL);
 
     ShowWindow(hwnd, SW_SHOWNORMAL);
+
+    DragAcceptFiles(hwnd, TRUE);
 
     const char* file_name = "test.txt";
     if (__argc == 2) {

@@ -11,7 +11,7 @@ pushd bin
 set FLAGS=/EHsc /MP /Zi /W4
 rem set set FLAGS=/Ox /MP /GL
 
-set SYSTEM_LIBS=User32.lib Gdi32.lib
+set SYSTEM_LIBS=User32.lib Gdi32.lib Shell32.lib
 
 set SOURCE_FILES=..\source\platform.cpp ..\source\editor.cpp ..\source\editor_view.cpp
 
