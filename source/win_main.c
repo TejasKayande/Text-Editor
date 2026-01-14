@@ -16,14 +16,14 @@
 
 /******* Structure Definations *******/
 // TODO(Tejas): Make this platform independent
-struct EditorOptions {
+typedef struct EditorOptions {
     HFONT    font;
     COLORREF font_color;
     HBRUSH   background;
     HPEN     cursor_color;
 
     EditorView ev;
-};
+} EditorOptions;
 /*************************************/
 
 /******* Global Variables *******/
@@ -38,7 +38,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
     SetTextColor(hdc, G_editor_opt.font_color);
     SetBkMode(hdc, TRANSPARENT);
-    
+
     int x = 0;
     int y = 0;
 
@@ -106,9 +106,9 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     } break;
 
     case WM_KEYDOWN: {
-        
+
         bool ctrl_down = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
-        
+
         switch (wParam) {
 
         case 'S': {
@@ -196,7 +196,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         int width  = rect.right - rect.left;
         int height = rect.bottom - rect.top;
 
-        (void)width; // NOTE(Tejas): not used yet, just to avoid warning
+        (void)width;
 
         FillRect(hdc, &rect, G_editor_opt.background);
 
@@ -256,8 +256,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     return result;
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
-
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
 #ifndef NDEBUG
     bool console_attached = false;
     if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
@@ -268,6 +267,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     freopen_s(&fp, "CONOUT$", "w", stdout);
     freopen_s(&fp, "CONOUT$", "w", stderr);
 #endif
+
+    (void)hPrevInstance;
+    (void)pCmdLine;
+    (void)nCmdShow;
 
     int wnd_width  = 1000;
     int wnd_height = 800;

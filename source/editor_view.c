@@ -33,7 +33,7 @@ void ev_MoveViewOneLineUp(EditorView *ev, GapBuffer *gb) {
     (void)(gb);
 
     if (ev->start_line <= 0) return;
-    
+
     ev->start_line--;
     ev->end_line--;
 }

@@ -1,6 +1,6 @@
 /*===============================================================================
   @File:   editor.h
-  @Brief:  
+  @Brief:
   @Author: Tejas
   @Date:   28-08-2025
   @Notice: Released under the MIT License. See LICENSE file for details.
@@ -17,36 +17,36 @@
 #define INITIAL_GAP_SIZE  KB(1)
 #define INITIAL_MAX_LINES KB(1)
 
-struct Line {
+typedef struct Line {
     int start;
     int end;
-};
+} Line;
 
-struct Lines {
+typedef struct Lines {
     Line *items;
     int count;
     int capacity;
-};
+} Lines;
 
-struct Data {
+typedef struct Data {
     char *chars;
     int capacity;
-};
+} Data;
 
 // NOTE(Tejas): gap_start and gap_end are inclusive.
-struct GapBuffer {
+typedef struct GapBuffer {
     Data  data;
     Lines lines;
     int   gap_start;
     int   gap_end;
     int   cur_pos;
-};
+} GapBuffer;
 
 // NOTE(Tejas): Editor Theme and stuff can go in here
-struct Editor {
+typedef struct Editor {
     GapBuffer gb;
     const char* file_name;
-};
+} Editor;
 
 void ed_Init(Editor **ed, const char *file_name);
 void ed_Close(Editor *ed);

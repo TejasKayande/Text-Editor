@@ -13,7 +13,7 @@ rem set set FLAGS=/Ox /MP /GL
 
 set SYSTEM_LIBS=User32.lib Gdi32.lib Shell32.lib
 
-set SOURCE_FILES=..\source\platform.cpp ..\source\editor.cpp ..\source\editor_view.cpp
+set SOURCE_FILES=..\source\platform.c ..\source\editor.c ..\source\editor_view.c
 
 set OUTPUT_EXE=editor.exe
 

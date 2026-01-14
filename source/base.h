@@ -1,6 +1,6 @@
 /*===============================================================================
   @File:   base.h
-  @Brief:  
+  @Brief:
   @Author: Tejas
   @Date:   28-08-2025
   @Notice: Released under the MIT License. See LICENSE file for details.
@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 // Logging macro: only enabled in debug builds
 #ifndef NDEBUG
@@ -70,8 +71,8 @@ typedef uint64_t u64;
 typedef float    f32;
 typedef double   f64;
 
-#define global   static 
-#define persist  static 
-#define internal static 
+#define global   static
+#define persist  static
+#define internal static
 
 #endif // BASE_H
