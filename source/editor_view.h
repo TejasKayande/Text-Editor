@@ -17,10 +17,10 @@
 // TODO(Tejas): I maybe would want to create an enum for font
 //              but maybe not... hmmm
 
-struct EditorView {
+typedef struct EditorView {
     int start_line;
     int end_line;
-};
+} EditorView;
 
 // TODO(Tejas): Does the column wrap also go in here??
 void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_height);

@@ -2,7 +2,7 @@
   @File:   platform.cpp
   @Brief:  Platform-specific entry point selection.
   @Author: Tejas
-  @Date:   28-08-2025 
+  @Date:   28-08-2025
   @Notice: Released under the MIT License. See LICENSE file for details.
   =============================================================================== */
 
@@ -11,8 +11,8 @@
 #if ON_WINDOWS
 #define NOMINMAX
 #include <windows.h>
-#include "win_platform.cpp"
-#include "win_main.cpp"
+#include "win_platform.c"
+#include "win_main.c"
 #else
 
 #error This Platform is currently not supported!
