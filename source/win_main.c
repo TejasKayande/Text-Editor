@@ -46,7 +46,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
 
         Line line = gb->lines.items[i];
 
-        // FIXME(Tejas): breaks if number of chars in a line is bigger than 4096.
+        // FIXME(Tejas): breaks if number of chars in a line is bigger than 4096(bytes).
         char temp[KB(4)];
         int len = 0;
 
