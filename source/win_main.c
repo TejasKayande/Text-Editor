@@ -13,6 +13,7 @@
 #include "base.h"
 #include "editor.h"
 #include "editor_view.h"
+#include "input.h"
 
 /******* Structure Definations *******/
 // TODO(Tejas): Make this platform independent
@@ -107,79 +108,13 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
     case WM_KEYDOWN: {
 
-        bool ctrl_down = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+        KeyInput in = { };
+        in.ctrl  = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+        in.shift = (GetKeyState(VK_SHIFT)   & 0x8000) != 0;
+        in.alt   = (GetKeyState(VK_MENU)    & 0x8000) != 0;
+        in.key   = (u32)wParam;
 
-        switch (wParam) {
-
-        case 'S': {
-            if (ctrl_down) {
-                SaveGapBufferToFile(
-                    G_editor->file_name,
-                    G_editor->gb.data.chars,
-                    G_editor->gb.data.capacity,
-                    G_editor->gb.gap_start,
-                    G_editor->gb.gap_end
-                );
-            }
-        } break;
-
-        case 'A': {
-            if (ctrl_down) {
-                ed_LogGapBuffer(&(G_editor->gb));
-            }
-        } break;
-
-        case 'Q': {
-            if (ctrl_down) {
-                ed_LogValidChars(&(G_editor->gb));
-            }
-        } break;
-
-        case 'F': {
-            if (ctrl_down) {
-                ed_MoveCursorRight(&(G_editor->gb));
-            }
-        } break;
-
-        case 'B': {
-            if (ctrl_down) {
-                ed_MoveCursorLeft(&(G_editor->gb));
-            }
-        } break;
-
-        case 'P': {
-            if (ctrl_down) {
-                if (ed_GetCursorRow(&(G_editor->gb)) == G_editor_opt.ev.start_line)
-                    ev_MoveViewOneLineUp(&(G_editor_opt.ev), &(G_editor->gb));
-                ed_MoveCursorUp(&(G_editor->gb));
-            }
-        } break;
-
-        case 'N': {
-            if (ctrl_down) {
-                if (ed_GetCursorRow(&(G_editor->gb)) == G_editor_opt.ev.end_line)
-                    ev_MoveViewOneLineDown(&(G_editor_opt.ev), &(G_editor->gb));
-                ed_MoveCursorDown(&(G_editor->gb));
-            }
-        } break;
-
-        case VK_RIGHT: {
-            ed_MoveCursorRight(&(G_editor->gb));
-        } break;
-
-        case VK_LEFT: {
-            ed_MoveCursorLeft(&(G_editor->gb));
-        } break;
-
-        case VK_UP: {
-            ev_MoveViewOneLineUp(&(G_editor_opt.ev), &(G_editor->gb));
-        } break;
-
-        case VK_DOWN: {
-            ev_MoveViewOneLineDown(&(G_editor_opt.ev), &(G_editor->gb));
-        } break;
-
-        }
+        in_HandleKey(in, G_editor, &G_editor_opt.ev);
 
         InvalidateRect(hwnd, NULL, TRUE);
 
