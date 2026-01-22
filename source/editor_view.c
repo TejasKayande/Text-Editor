@@ -1,7 +1,7 @@
 
 #include "editor_view.h"
 
-void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_height) {
+void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_w, int font_h, int wnd_width, int wnd_height) {
 
     if (ev->start_line >= gb->lines.count)
         ev->start_line = gb->lines.count - 1;
@@ -12,6 +12,15 @@ void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_heig
     int lines_in_viewport = wnd_height / font_h;
     ev->end_line = ev->start_line + lines_in_viewport;
 
+
+    // TODO(Karan): Handle horizontal scrolling later
+    ev->start_col = 0;
+
+
+    int cols_in_viewport  = wnd_width / font_w;
+    ev->end_col   = ev->start_col + cols_in_viewport + 1; // NOTE(Karan): +1 to accomodate partial character at the end
+
+    
     // if (ev->end_line >= gb->lines.count) ev->end_line = gb->lines.count - 1;
 
     // TODO(Tejas): Make it so that the cursor will always be inside the View Port!

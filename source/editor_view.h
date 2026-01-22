@@ -20,10 +20,12 @@
 typedef struct EditorView {
     int start_line;
     int end_line;
+    int start_col;
+    int end_col;
 } EditorView;
 
 // TODO(Tejas): Does the column wrap also go in here??
-void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_height);
+void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_w, int font_h, int wnd_width, int wnd_height);
 
 void ev_MoveViewOneLineDown(EditorView *ev, GapBuffer *gb);
 void ev_MoveViewOneLineUp(EditorView *ev, GapBuffer *gb);
