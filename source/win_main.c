@@ -17,7 +17,7 @@
 
 /******* Structure Definations *******/
 // TODO(Tejas): Make this platform independent
-typedef struct EditorOptions {
+typedef struct {
     HFONT    font;
     COLORREF font_color;
     HBRUSH   background;
@@ -25,9 +25,17 @@ typedef struct EditorOptions {
 
     EditorView ev;
 } EditorOptions;
+
+typedef struct {
+    HDC     dc;
+    HBITMAP bm;
+    int     w;
+    int     h;
+} BackBuffer;
 /*************************************/
 
 /******* Global Variables *******/
+global BackBuffer    G_back_buffer;
 global EditorOptions G_editor_opt;
 global Editor       *G_editor;
 /********************************/
@@ -73,11 +81,47 @@ internal void RenderCursor(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
     Rectangle(hdc, x, y, x + 3, y + font_h);
 }
 
+internal void ResizeBackBuffer(HWND hwnd, int w, int h) {
+
+    if (G_back_buffer.dc && (w == G_back_buffer.w && h == G_back_buffer.h))
+        return;
+
+    if (G_back_buffer.bm) {
+        DeleteObject(G_back_buffer.bm);
+        G_back_buffer.bm = NULL;
+    }
+
+    HDC dc = GetDC(hwnd);
+
+    if (!G_back_buffer.dc) {
+        G_back_buffer.dc = CreateCompatibleDC(dc);
+    }
+
+    G_back_buffer.bm = CreateCompatibleBitmap(dc, w, h);
+    SelectObject(G_back_buffer.dc, G_back_buffer.bm);
+
+    ReleaseDC(hwnd, dc);
+
+    G_back_buffer.w = w;
+    G_back_buffer.h = h;
+}
+
 internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     LRESULT result = 0;
 
     switch (msg) {
+
+    case WM_SIZE: {
+        RECT client_rect = { };
+        GetClientRect(hwnd, &client_rect);
+
+        int w = client_rect.right  - client_rect.left;
+        int h = client_rect.bottom - client_rect.top;
+
+        ResizeBackBuffer(hwnd, w, h);
+
+    } break;
 
     case WM_CREATE: {
 
@@ -133,27 +177,29 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         (void)width;
 
-        FillRect(hdc, &rect, G_editor_opt.background);
+        FillRect(G_back_buffer.dc, &rect, G_editor_opt.background);
 
         // Text Rendering
-        HFONT old_font = (HFONT)SelectObject(hdc, G_editor_opt.font);
+        HFONT old_font = (HFONT)SelectObject(G_back_buffer.dc, G_editor_opt.font);
 
         TEXTMETRIC tm;
-        GetTextMetrics(hdc, &tm);
+        GetTextMetrics(G_back_buffer.dc, &tm);
 
         int font_w = tm.tmAveCharWidth;
         int font_h = tm.tmHeight;
 
         ev_UpdateEditorView(&(G_editor_opt.ev), &(G_editor->gb), font_h, height);
-        RenderGapBuffer(hdc, &(G_editor->gb), font_w, font_h);
+        RenderGapBuffer(G_back_buffer.dc, &(G_editor->gb), font_w, font_h);
 
         // Cursor Rendering
-        HPEN old_pen = (HPEN)SelectObject(hdc, G_editor_opt.cursor_color);
+        HPEN old_pen = (HPEN)SelectObject(G_back_buffer.dc, G_editor_opt.cursor_color);
 
-        RenderCursor(hdc, &(G_editor->gb), font_w, font_h);
+        RenderCursor(G_back_buffer.dc, &(G_editor->gb), font_w, font_h);
 
-        SelectObject(hdc, old_font);
-        SelectObject(hdc, old_pen);
+        SelectObject(G_back_buffer.dc, old_font);
+        SelectObject(G_back_buffer.dc, old_pen);
+
+        BitBlt(hdc, 0, 0, width, height, G_back_buffer.dc, 0, 0, SRCCOPY);
 
         EndPaint(hwnd, &ps);
 
