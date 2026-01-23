@@ -163,7 +163,7 @@ void ed_Init(Editor **ed, const char* file_name) {
     gb->gap_start = fs;
     gb->gap_end   = bs - 1;
 
-    gb->cur_pos = gb->gap_start;
+    gb->cur_pos = 0;
 
     (*ed)->file_name = file_name;
 
