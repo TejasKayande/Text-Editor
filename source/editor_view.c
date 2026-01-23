@@ -14,10 +14,9 @@ void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_h, int wnd_heig
 
     // if (ev->end_line >= gb->lines.count) ev->end_line = gb->lines.count - 1;
 
-    // TODO(Tejas): Make it so that the cursor will always be inside the View Port!
     int cur_row = ed_GetCursorRow(gb);
-    if (cur_row < ev->start_line) ed_SetCursorRow(gb, ev->start_line);
-    if (cur_row > ev->end_line)   ed_SetCursorRow(gb, ev->end_line - 1);
+    if (cur_row < ev->start_line)   ev_MoveViewOneLineUp(ev, gb);
+    if (cur_row > ev->end_line - 1) ev_MoveViewOneLineDown(ev, gb);
 }
 
 void ev_MoveViewOneLineDown(EditorView *ev, GapBuffer *gb) {
