@@ -51,16 +51,17 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
     int x = 0;
     int y = 0;
 
-    for (int i = G_editor_opt.ev.start_line; i <= G_editor_opt.ev.end_line && i < gb->lines.count; i++) {
+    EditorView *ev = &G_editor_opt.ev;
+
+    for (int i = ev->start_line; i <= ev->end_line && i < gb->lines.count; i++) {
 
         Line line = gb->lines.items[i];
 
-        // FIXME(Tejas): breaks if number of chars in a line is bigger than 4096(bytes).
-        char temp[KB(4)];
+        const int size = ev->end_col - ev->start_col;
+        char *temp = (char*)malloc(size);
         int len = 0;
 
-        for (int index = line.start; index < line.end; index++) {
-
+        for (int index = line.start + ev->start_col; index < line.end && len < size; index++) {
             if (index >= gb->gap_start && index <= gb->gap_end)
                 continue;
 
@@ -68,6 +69,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
         }
 
         TextOutA(hdc, x, y, temp, len);
+        free(temp);
         y += font_h;
     }
 }
@@ -188,7 +190,7 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         int font_w = tm.tmAveCharWidth;
         int font_h = tm.tmHeight;
 
-        ev_UpdateEditorView(&(G_editor_opt.ev), &(G_editor->gb), font_h, height);
+        ev_UpdateEditorView(&(G_editor_opt.ev), &(G_editor->gb), font_w, font_h, width, height);
         RenderGapBuffer(G_back_buffer.dc, &(G_editor->gb), font_w, font_h);
 
         // Cursor Rendering
