@@ -263,6 +263,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     wc.lpfnWndProc   = WndProc;
     wc.hInstance     = hInstance;
     wc.lpszClassName = wnd_name;
+    wc.hCursor       = LoadCursor(NULL, IDC_ARROW); // NOTE(Karan): Default arrow cursor for now
+                                                    // but handle WM_SETCURSOR to change it later
 
     RegisterClassA(&wc);
 
