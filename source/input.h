@@ -37,6 +37,9 @@ typedef enum {
     CMD_MOVE_VIEW_UP,
     CMD_MOVE_VIEW_DOWN,
 
+    CMD_MOVE_UP_PARA,
+    CMD_MOVE_DOWN_PARA,
+
     // NOTE(Tejas): Debug Commands
     CMD_LOG_GAP_BUFFER,
 
