@@ -99,36 +99,11 @@ internal void ExecuteCommand(EditorCommand cmd, Editor *ed, EditorView *ev) {
     } break;
 
     case CMD_MOVE_UP_PARA: {
-
-        // TODO(Tejas): Do we want to move the cursor one line at a time or directly
-        //              put it on the row it belongs?...
-        //              Moving it one at a time can give us a cool scrolling animation???...
-        int row =  ed_GetCursorRow(gb);
-        while (row > 0) {
-            ed_MoveCursorUp(gb);
-            row--;
-
-            Line line = gb->lines.items[row];
-            if ((line.end - line.start) < 1) {
-                break;
-            }
-        }
-        
+        ed_MoveCursorParaUp(gb);
     } break;
 
     case CMD_MOVE_DOWN_PARA: {
-
-        int row = ed_GetCursorRow(gb);
-        while (row < gb->lines.count) {
-            ed_MoveCursorDown(gb);
-            row++;
-
-            Line line = gb->lines.items[row];
-            if ((line.end - line.start) < 1) {
-                break;
-            }
-        }
-        
+        ed_MoveCursorParaDown(gb);
     } break;
 
     default: break;
