@@ -71,17 +71,21 @@ internal void ExecuteCommand(EditorCommand cmd, Editor *ed, EditorView *ev) {
     } break;
 
     case CMD_MOVE_CUR_RIGHT: {
+        Line l = gb->lines.items[ed_GetCursorRow(gb)];
+        if (ed_GetCursorRow(gb) >= ev->end_line - 1 && ed_GetCursorCol(gb) == l.end - l.start)
+            ev_MoveViewOneLineDown(ev, gb);
         ed_MoveCursorRight(gb);
     } break;
 
     case CMD_MOVE_CUR_UP: {
+        // FIXME(Karan): Not working properly
         if (ed_GetCursorRow(gb) == ev->start_line)
             ev_MoveViewOneLineUp(ev, gb);
         ed_MoveCursorUp(gb);
     } break;
 
     case CMD_MOVE_CUR_DOWN: {
-        if (ed_GetCursorRow(gb) == ev->end_line)
+        if (ed_GetCursorRow(gb) == ev->end_line - 1 && ev->end_line < gb->lines.count) 
             ev_MoveViewOneLineDown(ev, gb);
         ed_MoveCursorDown(gb);
     } break;
