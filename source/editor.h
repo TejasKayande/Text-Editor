@@ -67,6 +67,9 @@ void ed_MoveCursorDown(GapBuffer *gb);
 
 void ed_DeleteCharToRight(GapBuffer *gb);
 
+void ed_MoveCursorParaUp(GapBuffer *gb);
+void ed_MoveCursorParaDown(GapBuffer *gb);
+
 // NOTE(Tejas): For Debugging purposes
 void ed_LogGapBuffer(GapBuffer *gb);
 void ed_LogValidChars(GapBuffer *gb);

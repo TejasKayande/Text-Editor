@@ -10,7 +10,6 @@
 #include <windows.h>
 #include <shellapi.h>
 
-#include "platform.h"
 #include "base.h"
 #include "editor.h"
 #include "editor_view.h"
@@ -59,7 +58,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
         Line line = gb->lines.items[i];
 
         const int size = ev->end_col - ev->start_col;
-        char *temp = (char*)AllocateMem(size);
+        char *temp = (char*)malloc(size);
         int len = 0;
 
         for (int index = line.start + ev->start_col; index < line.end && len < size; index++) {
@@ -70,7 +69,7 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
         }
 
         TextOutA(hdc, x, y, temp, len);
-        FreeMem(temp);
+        free(temp);
         y += font_h;
     }
 }
