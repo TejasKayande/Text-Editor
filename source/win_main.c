@@ -58,7 +58,11 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
         Line line = gb->lines.items[i];
 
         const int size = ev->end_col - ev->start_col;
-        char *temp = (char*)malloc(size);
+
+        // NOTE(Tejas): This function is called every frame, so we dont want to
+        //              call malloc in a for loop in a function that is called
+        //              every frame.
+        char temp[4096];
         int len = 0;
 
         for (int index = line.start + ev->start_col; index < line.end && len < size; index++) {
@@ -69,7 +73,6 @@ internal void RenderGapBuffer(HDC hdc, GapBuffer *gb, int font_w, int font_h) {
         }
 
         TextOutA(hdc, x, y, temp, len);
-        free(temp);
         y += font_h;
     }
 }

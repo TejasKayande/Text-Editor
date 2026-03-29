@@ -1,3 +1,10 @@
+/*===============================================================================
+  @File:   editor_view.c
+  @Brief:  
+  @Author: Tejas
+  @Date:   23-09-2025
+  @Notice: Released under the MIT License. See LICENSE file for details.
+  ===============================================================================*/
 
 #include "editor_view.h"
 

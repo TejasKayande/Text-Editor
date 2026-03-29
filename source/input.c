@@ -51,7 +51,7 @@ internal EditorCommand GetEditorCommand(KeyInput in) {
 }
 
 internal void ExecuteCommand(EditorCommand cmd, Editor *ed, EditorView *ev) {
-
+ 
     GapBuffer *gb = &ed->gb;
 
     switch (cmd) {
