@@ -1,7 +1,5 @@
 todo.md
 test.txt
 bin/
-build.bat/
 build/
-.gitignore
-
+/.vscode/
