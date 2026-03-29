@@ -9,7 +9,7 @@ if not exist "bin" (mkdir bin)
 pushd bin
 
 set FLAGS=/FC /EHsc /MP /Zi /W4
-rem set set FLAGS=/Ox /MP /GL
+rem set FLAGS=/Ox /MP /GL
 
 set SYSTEM_LIBS=User32.lib Gdi32.lib Shell32.lib
 

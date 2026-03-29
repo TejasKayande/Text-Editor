@@ -219,8 +219,8 @@ internal LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         if (!(file_count > 1)) {
             char file_name[KB(1)];
             DragQueryFileA(hdrop, 0, file_name, KB(1));
+            ed_Close(G_editor);
             ed_Init(&G_editor, file_name);
-            LOG("Loading %s", file_name);
             InvalidateRect(hwnd, NULL, TRUE);
         }
 
