@@ -26,13 +26,12 @@ void ev_UpdateEditorView(EditorView *ev, GapBuffer *gb, int font_w, int font_h, 
 
     int cols_in_viewport  = wnd_width / font_w;
     ev->end_col   = ev->start_col + cols_in_viewport + 1; // NOTE(Karan): +1 to accomodate partial character at the end
-
     
     // if (ev->end_line >= gb->lines.count) ev->end_line = gb->lines.count - 1;
 
     int cur_row = ed_GetCursorRow(gb);
-    if (cur_row < ev->start_line)   ev_MoveViewOneLineUp(ev, gb);
-    if (cur_row > ev->end_line - 1) ev_MoveViewOneLineDown(ev, gb);
+    while (cur_row < ev->start_line)   ev_MoveViewOneLineUp(ev, gb);
+    while (cur_row > ev->end_line - 1) ev_MoveViewOneLineDown(ev, gb);
 }
 
 void ev_MoveViewOneLineDown(EditorView *ev, GapBuffer *gb) {
